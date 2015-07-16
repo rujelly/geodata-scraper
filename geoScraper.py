@@ -13,9 +13,14 @@ from lxml import html 				# parse HTML
 import xlwt							# write to final spreadsheet
 import urllib						# get page HTML
 
-# create spreadsheet with headers
-# @return Workbook object of newly created spreadsheet
+
 def createSpreadsheet():
+	"""
+	Create spreadsheet with headers
+
+	Returns:
+		Workbook object of newly created spreadsheet
+	"""
 	book = xlwt.Workbook()
 	sheet1 = book.add_sheet('Sheet 1', cell_overwrite_ok=True)
 
@@ -28,21 +33,31 @@ def createSpreadsheet():
 
 	return book
 
-# scrape html from facility webpage
-# @param String facility number (e.g. 025, X72, etc.)
-# @return String of HTML from the webpage
 def getFacilityPage(facNum):
+	"""
+	Scrape html from a facility webpage
+
+	Args:
+		String facility number (e.g. 025, X72, etc.)
+	Returns: 
+		String of HTML from the webpage
+	"""
 	BASE_URL = 'https://fdm-apps.asu.edu/UFRM/FDS/FacilityData.aspx?bNum='
 	url = BASE_URL + facNum 					
 	pageHTML = urllib.urlopen(url).read()
 
 	return pageHTML
 
-# parse page HTML for facility data
-# @param String of HTML from the webpage
-# @return Dict of facility data, including abbreviation, campus, long/lat, etc.
 def parseFacilityPage(pageHTML):
-	facility = {
+	"""
+	Parse page HTML for facility data
+
+	Args:
+		String of HTML from the webpage
+	Returns:
+		Dict of facility data (number, common name, abbreviation, address, campus, long/lat)
+	"""
+	facility = {	# initialized to 0, since some facility pages have no data available
 		'NUMBER' : 0,
 		'COMMON_NAME' : 0,
 		'ABBREVIATION' : 0,
@@ -50,12 +65,11 @@ def parseFacilityPage(pageHTML):
 		'CAMPUS' : 0,
 		'LONG_LAT' : 0
 		}
-
 	htmlList = pageHTML.split('\r\n')
+	i = 0
 
 	# parse lines for keywords and add to facility dict
-	i = 0
-	while(i < len(htmlList) - 4): # - 4 guards against index errors (HTML footer doesn't matter)
+	while(i < len(htmlList) - 4): # -4 guards against index errors (HTML footer doesn't matter)
 		if '<td>FACILITY COMMON NAME' in htmlList[i]:
 			commonName = htmlList[i + 2].strip()
 			commonName = commonName.replace('<',':').replace('>',':').split(':')
@@ -92,10 +106,15 @@ def parseFacilityPage(pageHTML):
 
 	return facility
 
-# writes facility data to the spreadsheet
-# @param Dict of facility data to be written
-# @return Boolean, True if write is successful, False otherwise
 def appendToSheet(facility, sheet, row):
+	"""
+	Write facility data to the spreadsheet
+	
+	Args:
+		Dict of facility data to be written
+	Returns:
+		Boolean, True if write is successful, False otherwise
+	"""
 	try:
 		sheet.write(row, 0, facility['NUMBER'])
 		sheet.write(row, 1, facility['COMMON_NAME'])
