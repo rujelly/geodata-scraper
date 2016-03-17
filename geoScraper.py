@@ -8,10 +8,10 @@
 # Andrew Roman meroman1@asu.edu
 #==============================================================================
 
-from HTMLParser import HTMLParser	# unescape characters
-from lxml import html 				# parse HTML
-import xlwt							# write to final spreadsheet
-import urllib						# get page HTML
+from HTMLParser import HTMLParser  # unescape characters
+from lxml import html 		   # parse HTML
+import xlwt			   # write to final spreadsheet
+import urllib			   # get page HTML
 
 
 def createSpreadsheet():
